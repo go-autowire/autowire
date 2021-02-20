@@ -1,13 +1,11 @@
 package configuration
 
 import (
-	"autowire"
-	"log"
+	"github.com/go-autowire/autowire"
 )
 
 func init() {
-	log.Println("Initializing ApplicationConfig")
-	autowire.Autowire(New("con"))
+	autowire.Autowire(New("default"))
 }
 
 type ApplicationConfig struct {
