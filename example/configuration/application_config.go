@@ -8,14 +8,17 @@ func init() {
 	autowire.Autowire(New("default"))
 }
 
+// A ApplicationConfig represents name struct, which hold application configuration
 type ApplicationConfig struct {
-	kind string
+	apiKey string
 }
 
-func New(kind string) *ApplicationConfig {
-	return &ApplicationConfig{kind: kind}
+// New returns new ApplicationConfig
+func New(apiKey string) *ApplicationConfig {
+	return &ApplicationConfig{apiKey: apiKey}
 }
 
-func (a ApplicationConfig) Kind() string {
-	return a.kind
+// ApiKey is a Setter, which returns apiKey value
+func (a ApplicationConfig) ApiKey() string {
+	return a.apiKey
 }

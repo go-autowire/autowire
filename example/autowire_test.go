@@ -21,13 +21,12 @@ func (TestPaymentServiceTest) Balance() *big.Float {
 type TestAuditClient struct {
 }
 
-func (TestAuditClient) Send(event string) {
+func (TestAuditClient) Send(_ string) {
 	log.Printf("Test event delivered")
 }
 
 func TestAutowire(t *testing.T) {
-	app := autowire.Autowired(app.Application{}).(*app.Application)
-	app.UserSvc().PaymentSvc = &TestPaymentServiceTest{}
-	atesting.Spies(app, []interface{}{&TestPaymentServiceTest{}, &TestAuditClient{}})
-	app.Start()
+	application := autowire.Autowired(app.Application{}).(*app.Application)
+	atesting.Spies(application, []interface{}{&TestPaymentServiceTest{}, &TestAuditClient{}})
+	application.Start()
 }

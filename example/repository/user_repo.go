@@ -6,23 +6,29 @@ func init() {
 	autowire.Autowire(&InMemoryUserRoleRepository{})
 }
 
+// UserRole type
 type UserRole string
 
 const (
+	// OwnerRole
 	OwnerRole UserRole = "owner"
 )
 
+// A String returns UserRole as a string
 func (u UserRole) String() string {
 	return string(u)
 }
 
+// A UserRoleRepository represents interface containing roles related function: GetAllRoles
 type UserRoleRepository interface {
 	GetAllRoles(userId string) ([]UserRole, error)
 }
 
+// A InMemoryUserRoleRepository represents struct, which implements UserRoleRepository interface
 type InMemoryUserRoleRepository struct {
 }
 
+// GetAllRoles returns all roles of the user
 func (i InMemoryUserRoleRepository) GetAllRoles(_ string) ([]UserRole, error) {
 	return []UserRole{OwnerRole}, nil
 }

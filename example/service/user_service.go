@@ -2,23 +2,19 @@ package service
 
 import (
 	"fmt"
-	"github.com/go-autowire/autowire"
 	"github.com/go-autowire/autowire/example/repository"
 	"log"
 	"math/big"
 )
 
-func init() {
-	autowire.Autowire(&repository.InMemoryUserRoleRepository{})
-	autowire.Autowire(&UserService{})
-}
-
+// A UserService represents a named struct
 type UserService struct {
 	PaymentSvc         PaymentService                `autowire:"service/BankAccountService"`
-	auditClient        AuditEventSender              `autowire:"service/AuditClient"`
+	auditClient        EventSender                   `autowire:"service/AuditService"`
 	userRoleRepository repository.UserRoleRepository `autowire:"repository/InMemoryUserRoleRepository"`
 }
 
+// Balance is function returning current balance of the user
 func (u UserService) Balance(userId string) (*big.Float, error) {
 	if u.validateUser(userId) {
 		u.auditClient.Send("Balance:check")
@@ -41,10 +37,12 @@ func (u UserService) validateUser(userId string) bool {
 	return false
 }
 
-func (u *UserService) SetAuditClient(auditClient AuditEventSender) {
+// SetAuditClient is a Setter for auditClient field
+func (u *UserService) SetAuditClient(auditClient EventSender) {
 	u.auditClient = auditClient
 }
 
+// SetUserRoleRepository is a Setter for userRoleRepository field
 func (u *UserService) SetUserRoleRepository(userRoleRepository repository.UserRoleRepository) {
 	u.userRoleRepository = userRoleRepository
 }

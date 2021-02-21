@@ -8,11 +8,39 @@ import (
 	"unicode"
 )
 
+// Spy Function is replacing object field with the one provided in the function as a second argument.
+// Spy Function detects automatically which field could be replaced with the provided one.
+// Important note: In order to traverse fields of the unexported fields we need to implement Getters.
+// As shown inside example package, we are replacing AuditClient with our mock implementation and in order to reach this
+// field we need Getter.
+// Example:
+//   atesting.Spy(application, &TestAuditClient{})
+// Or this is equivalent of
+//   application.UserSvc().SetAuditClient(&TestAuditClient{})
+// Getter UserSvc() is used to access userSvc field, which is unexported. For more information take a look at example package.
+//Parameters of Spy function:
+//   - `v`          : pointer to structure inside which spy object will be applied
+//   - `dependency` : pointer to structure which will be injected
 func Spy(v interface{}, dependency interface{}) {
 	slice := []interface{}{dependency}
 	Spies(v, slice)
 }
 
+// Spies Function is replacing object fields with the list of provided dependencies in the function as a second argument.
+// Spy Function detects automatically which field could be replaced with the provided one in the list of dependencies.
+// Important note: In order to traverse fields of the unexported fields we need to implement Getters.
+// As shown inside example package, we are replacing AuditClient with our mock implementation and in order to reach this
+// field we need Getter.
+// Example:
+//   	atesting.Spies(application, []interface{}{&TestPaymentServiceTest{}, &TestAuditClient{}})
+// Or this is equivalent of
+//   application.UserSvc().SetAuditClient(&TestAuditClient{})
+//   application.UserSvc().PaymentSvc = &TestPaymentServiceTest{}
+// Getter UserSvc() is used to access userSvc field, which is unexported. In case of PaymentSvc it is not required as field PaymentSvc is exported.
+// Parameters of Spies function:
+//   - `v`            : structure inside which spy objects will be applied
+//   - `dependencies` : list of dependencies which will be injected
+// For more information take a look at example package.
 func Spies(v interface{}, dependencies []interface{}) {
 	queue := list.New()
 	queue.PushBack(v)
@@ -38,7 +66,7 @@ func Spies(v interface{}, dependencies []interface{}) {
 							t := reflect.New(dependValue.Type())
 							log.Println("Injecting Spy on dependency by tag " + tag + " will be used " + t.Type().String())
 							autowire.Autowire(dependency)
-							setValue(value, elem, i, dependency)
+							setFieldValue(value, elem, i, dependency)
 						}
 					}
 				}
@@ -61,7 +89,7 @@ func Spies(v interface{}, dependencies []interface{}) {
 	}
 }
 
-func setValue(value reflect.Value, elem reflect.Value, i int, dependency interface{}) bool {
+func setFieldValue(value reflect.Value, elem reflect.Value, i int, dependency interface{}) bool {
 	runeName := []rune(elem.Type().Field(i).Name)
 	exported := unicode.IsUpper(runeName[0])
 	if exported {

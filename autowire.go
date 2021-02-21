@@ -15,6 +15,7 @@ var dependencies map[string]interface{}
 var currentProfile = getProfile()
 var ch = make(chan os.Signal)
 
+// Tag name
 const Tag = "autowire"
 
 func init() {
@@ -36,9 +37,12 @@ func InitProd(initFunc func()) {
 // In order dependencies to be injected the desired struct fields should be marked with
 // autowire tag.
 //
-// Injection of concrete type
+// Concrete type Injection
 //
 // Currently both type of fields exported and unexported are supported.
+//
+// Unexported field
+//
 // Following snippet shows injecting dependencies inside private structure fields using `autowire:""` tag:
 //  type Application struct {
 //      config  *configuration.ApplicationConfig `autowire:""`
@@ -46,30 +50,36 @@ func InitProd(initFunc func()) {
 //  func (a *Application) SetConfig(config  *configuration.ApplicationConfig)  {
 //      a.config = config
 //  }
-// If we need dependency to be injected into unexported field Set<FieldName> function is required, as show above.
+// If we need given dependency to be injected into unexported field Setter function(Set<FieldName>) is required, as show above.
+// If you have a field called config (lower case, unexported), the setter method should be called SetConfig (upper case, exported), not Setconfig.
+//
+// Exported field
+//
+// The use of upper-case names of the struct fields indicated field is exported.
 //  type Application struct {
 //      Config  *configuration.ApplicationConfig `autowire:""`
 //  }
-// Injection of dependency into exported is supported also and there is no need to provide additional Setter.
+// Dependency injection of exported field is supported with the difference that we don`t provide additional Setter function.
 //
-// Injection of interface
+// Interface Injection
 //
 // Often it`s better to rely on interface instead of concrete type, in order to accomplish this decoupling we specify
 // interfaces as a type of struct fields. The following snippet demonstrate that
 //  type UserService struct {
-//      userRoleRepository UserRoleRepository `autowire:"service/InMemoryUserRoleRepository"`
+//      userRoleRepository UserRoleRepository `autowire:"repository/InMemoryUserRoleRepository"`
 //  }
 //  func (u *UserService) SetUserRoleRepository(userRoleRepository UserRoleRepository) {
 //      u.userRoleRepository = userRoleRepository
 //  }
 // UserRoleRepository is simply an interface and InMemoryUserRoleRepository is a struct, which implements this interface.
 // As it`s done dependency injection on unexported field, providing Setter is required. Just to highlight unexported fields
-// needs Setter while exported not. For more information take a look at example package.
+// needs Setter while exported not. For more information take a look at example#https://github.com/go-autowire/autowire/tree/main/example package.
+// Example:
+//
+//
 func Autowire(v interface{}) {
 	value := reflect.ValueOf(v)
 	switch value.Kind() {
-	case reflect.Invalid:
-		log.Println("invalid reflection type")
 	case reflect.Ptr:
 		structType := getStructPtrFullPath(value)
 		_, ok := dependencies[structType]
@@ -80,6 +90,8 @@ func Autowire(v interface{}) {
 			autowireDependencies(value)
 			dependencies[structType] = v
 		}
+	case reflect.Invalid:
+		log.Panicln("invalid reflection type")
 	default: // reflect.Array, reflect.Struct, reflect.Interface
 		log.Println(value.Type().String() + " value")
 	}
@@ -95,8 +107,6 @@ func Autowired(v interface{}) interface{} {
 	value := reflect.ValueOf(v)
 	var path string
 	switch value.Kind() {
-	case reflect.Invalid:
-		log.Println("invalid")
 	case reflect.Struct:
 		path = getFullPath(value.Type().PkgPath(), value.Type().String())
 	case reflect.Ptr:
@@ -150,18 +160,7 @@ func autowireDependencies(value reflect.Value) {
 				t = reflect.New(elem.Type().Field(i).Type.Elem())
 				dependency, found := dependencies[getStructPtrFullPath(t)]
 				if found {
-					runeName := []rune(elem.Type().Field(i).Name)
-					exported := unicode.IsUpper(runeName[0])
-					if exported {
-						elem.Field(i).Set(reflect.ValueOf(dependency))
-					} else {
-						runeName[0] = unicode.ToUpper(runeName[0])
-						methodName := "Set" + string(runeName)
-						method := value.MethodByName(methodName)
-						if method.IsValid() {
-							method.Call([]reflect.Value{reflect.ValueOf(dependency)})
-						}
-					}
+					setValue(value, elem, i, dependency)
 				}
 			}
 		}
@@ -197,11 +196,11 @@ func findDependency(tagDependencyType string) []interface{} {
 // which implements io.Closer interface will be invoked Call() function, so currently active
 //occupied resources(connections, channels, etc.) could be released.
 func Run(function func()) {
-	defer close()
+	defer closeAll()
 	function()
 }
 
-func close() {
+func closeAll() {
 	log.Println("Closing...")
 	for _, dependency := range dependencies {
 		valueDepend := reflect.ValueOf(dependency)
