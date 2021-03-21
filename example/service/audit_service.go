@@ -15,7 +15,13 @@ type AuditService struct {
 	Type string
 }
 
-// A Send is dispatching the event
+// Send is dispatching the event
 func (AuditService) Send(event string) {
 	log.Printf("auditClient Event %s sent", event)
+}
+
+// Close method release all occupied resources
+func (a AuditService) Close() error {
+	log.Println("Closing AuditService")
+	return nil
 }

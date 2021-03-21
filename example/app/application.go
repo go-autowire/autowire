@@ -1,17 +1,19 @@
+// app package
 package app
 
 import (
-	"fmt"
+	"log"
+
 	"github.com/go-autowire/autowire"
 	"github.com/go-autowire/autowire/example/configuration"
 	"github.com/go-autowire/autowire/example/service"
-	"log"
 )
 
 func init() {
 	autowire.Autowire(&Application{})
 }
 
+// Application represents named struct
 type Application struct {
 	config  *configuration.ApplicationConfig `autowire:""`
 	userSvc *service.UserService             `autowire:""`
@@ -25,7 +27,7 @@ func (a Application) Start() {
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
-	fmt.Println("Current balance is " + balance.String())
+	log.Println("Current balance is " + balance.String())
 }
 
 // SetConfig method is a Setter of private field config

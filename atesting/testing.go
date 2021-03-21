@@ -1,11 +1,13 @@
+// atesting package provides Spy function for easy way to mock dependencies
 package atesting
 
 import (
 	"container/list"
-	"github.com/go-autowire/autowire"
 	"log"
 	"reflect"
 	"unicode"
+
+	"github.com/go-autowire/autowire"
 )
 
 // Spy Function is replacing object field with the one provided in the function as a second argument.
@@ -17,8 +19,9 @@ import (
 //   atesting.Spy(application, &TestAuditClient{})
 // Or this is equivalent of
 //   application.UserSvc().SetAuditClient(&TestAuditClient{})
-// Getter UserSvc() is used to access userSvc field, which is unexported. For more information take a look at example package.
-//Parameters of Spy function:
+// Getter UserSvc() is used to access userSvc field, which is unexported.
+// For more information take a look at example package.
+// Parameters of Spy function:
 //   - `v`          : pointer to structure inside which spy object will be applied
 //   - `dependency` : pointer to structure which will be injected
 func Spy(v interface{}, dependency interface{}) {
@@ -26,8 +29,9 @@ func Spy(v interface{}, dependency interface{}) {
 	Spies(v, slice)
 }
 
-// Spies Function is replacing object fields with the list of provided dependencies in the function as a second argument.
-// Spy Function detects automatically which field could be replaced with the provided one in the list of dependencies.
+// Spies Function is replacing object fields with the list of provided dependencies
+// in the function as a second argument. Spy Function detects automatically which field
+// could be replaced with the provided one in the list of dependencies.
 // Important note: In order to traverse fields of the unexported fields we need to implement Getters.
 // As shown inside example package, we are replacing AuditClient with our mock implementation and in order to reach this
 // field we need Getter.
@@ -36,7 +40,8 @@ func Spy(v interface{}, dependency interface{}) {
 // Or this is equivalent of
 //   application.UserSvc().SetAuditClient(&TestAuditClient{})
 //   application.UserSvc().PaymentSvc = &TestPaymentServiceTest{}
-// Getter UserSvc() is used to access userSvc field, which is unexported. In case of PaymentSvc it is not required as field PaymentSvc is exported.
+// Getter UserSvc() is used to access userSvc field, which is unexported. In case of PaymentSvc it is not required
+// as field PaymentSvc is exported.
 // Parameters of Spies function:
 //   - `v`            : structure inside which spy objects will be applied
 //   - `dependencies` : list of dependencies which will be injected

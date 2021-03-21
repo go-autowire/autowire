@@ -1,3 +1,4 @@
+// repository package
 package repository
 
 import "github.com/go-autowire/autowire"
@@ -10,7 +11,7 @@ func init() {
 type UserRole string
 
 const (
-	// OwnerRole
+	// OwnerRole literal
 	OwnerRole UserRole = "owner"
 )
 

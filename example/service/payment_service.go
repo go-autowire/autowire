@@ -15,7 +15,7 @@ type PaymentService interface {
 type BankAccountService struct {
 }
 
-// A Balance returns Account balance
+// Balance returns Account balance
 func (BankAccountService) Balance() *big.Float {
 	log.Println("BankAccountService...")
 	balance, _ := new(big.Float).SetString("600.10")
@@ -26,7 +26,7 @@ func (BankAccountService) Balance() *big.Float {
 type PaypalService struct {
 }
 
-// A Balance returns Account balance
+// Balance returns Account balance
 func (PaypalService) Balance() *big.Float {
 	log.Println("PaypalService...")
 	balance, _ := new(big.Float).SetString("100.10")

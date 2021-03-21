@@ -2,9 +2,10 @@ package service
 
 import (
 	"fmt"
-	"github.com/go-autowire/autowire/example/repository"
 	"log"
 	"math/big"
+
+	"github.com/go-autowire/autowire/example/repository"
 )
 
 // A UserService represents a named struct

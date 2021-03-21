@@ -3,8 +3,6 @@ package autowire
 import (
 	"io"
 	"log"
-	"os"
-	"os/signal"
 	"reflect"
 	"regexp"
 	"strings"
@@ -13,7 +11,6 @@ import (
 
 var dependencies map[string]interface{}
 var currentProfile = getProfile()
-var ch = make(chan os.Signal)
 
 // Tag name
 const Tag = "autowire"
@@ -21,7 +18,6 @@ const Tag = "autowire"
 func init() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	log.Println("Init Autowire Context")
-	signal.Notify(ch, os.Interrupt, os.Kill)
 	dependencies = make(map[string]interface{})
 }
 
@@ -34,8 +30,9 @@ func InitProd(initFunc func()) {
 }
 
 // Autowire function injects all dependencies for the given structure v.
-// In order dependencies to be injected the desired struct fields should be marked with
-// autowire tag.
+// Autowire function should be executed in the init() function of the
+// package. In order dependencies to be injected the desired struct fields
+// should be marked with autowire tag.
 //
 // Concrete type Injection
 //
@@ -43,40 +40,50 @@ func InitProd(initFunc func()) {
 //
 // Unexported field
 //
-// Following snippet shows injecting dependencies inside private structure fields using `autowire:""` tag:
+// Following snippet shows injecting dependencies inside private structure
+// fields using `autowire:""` tag:
 //  type Application struct {
 //      config  *configuration.ApplicationConfig `autowire:""`
 //  }
 //  func (a *Application) SetConfig(config  *configuration.ApplicationConfig)  {
 //      a.config = config
 //  }
-// If we need given dependency to be injected into unexported field Setter function(Set<FieldName>) is required, as show above.
-// If you have a field called config (lower case, unexported), the setter method should be called SetConfig (upper case, exported), not Setconfig.
+// If we need given dependency to be injected into unexported field Setter
+// function(Set<FieldName>) is required, as show above. If you have a field
+// called config (lower case, unexported), the setter method should be called
+// SetConfig, not Setconfig.
 //
 // Exported field
 //
-// The use of upper-case names of the struct fields indicated field is exported.
+// The use of upper-case names of the struct fields indicated that field is exported.
 //  type Application struct {
 //      Config  *configuration.ApplicationConfig `autowire:""`
 //  }
-// Dependency injection of exported field is supported with the difference that we don`t provide additional Setter function.
+// Dependency injection of exported field is supported with the difference that we don't
+// provide additional Setter function.
 //
 // Interface Injection
 //
-// Often it`s better to rely on interface instead of concrete type, in order to accomplish this decoupling we specify
-// interfaces as a type of struct fields. The following snippet demonstrate that
+// Often it's better to rely on interface instead of concrete type, in order to
+// accomplish this decoupling we should specify interfaces as a type of struct
+// fields. The following snippet demonstrate that:
 //  type UserService struct {
 //      userRoleRepository UserRoleRepository `autowire:"repository/InMemoryUserRoleRepository"`
 //  }
 //  func (u *UserService) SetUserRoleRepository(userRoleRepository UserRoleRepository) {
 //      u.userRoleRepository = userRoleRepository
 //  }
-// UserRoleRepository is simply an interface and InMemoryUserRoleRepository is a struct, which implements this interface.
-// As it`s done dependency injection on unexported field, providing Setter is required. Just to highlight unexported fields
-// needs Setter while exported not. For more information take a look at example#https://github.com/go-autowire/autowire/tree/main/example package.
-// Example:
-//
-//
+// UserRoleRepository is simply an interface and InMemoryUserRoleRepository is a
+// struct, which implements that interface. As dependency injection is executed
+// on unexported field, providing Setter is required. Just to highlight unexported
+// fields needs Setter while exported not. For more information take a look at
+// example https://github.com/go-autowire/autowire/tree/main/example package.
+// Very Simplified Example:
+//		type App struct {}
+//		func init()  {
+//			autowire.Autowire(&App{})
+//		}
+// As mentioned above Autowire function should be invoked in the package init function.
 func Autowire(v interface{}) {
 	value := reflect.ValueOf(v)
 	switch value.Kind() {
@@ -95,12 +102,12 @@ func Autowire(v interface{}) {
 	default: // reflect.Array, reflect.Struct, reflect.Interface
 		log.Println(value.Type().String() + " value")
 	}
-	//log.Println(dependencies)
+	// log.Println(dependencies)
 }
 
 // Autowired function returns fully initialized with all dependencies instance, which is ready to be used.
-//As the result is empty interface, type assertions is required before using the instance.
-//Take a look at https://golang.org/ref/spec#Type_assertions for more information.
+// As the result is empty interface, type assertions is required before using the instance.
+// Take a look at https://golang.org/ref/spec#Type_assertions for more information.
 // The following snippet demonstrate how could be done :
 // 	 app := autowire.Autowired(app.Application{}).(*app.Application)
 func Autowired(v interface{}) interface{} {
@@ -119,6 +126,24 @@ func Autowired(v interface{}) interface{} {
 		return dependency
 	}
 	return nil
+}
+
+// Close function invoke Close method on each autowired struct
+// which implements io.Closer interface, so currently active
+// occupied resources (connections, channels, descriptor, etc.)
+// could be released.
+func Close() {
+	log.Println("Closing...")
+	for _, dependency := range dependencies {
+		valueDepend := reflect.ValueOf(dependency)
+		closerType := reflect.TypeOf((*io.Closer)(nil)).Elem()
+		if valueDepend.Type().Implements(closerType) {
+			err := dependency.(io.Closer).Close()
+			if err != nil {
+				log.Println(err.Error())
+			}
+		}
+	}
 }
 
 func getStructPtrFullPath(value reflect.Value) string {
@@ -190,26 +215,4 @@ func findDependency(tagDependencyType string) []interface{} {
 		}
 	}
 	return result
-}
-
-// Run executes function function after the function execution completes for each autowired struct
-// which implements io.Closer interface will be invoked Call() function, so currently active
-//occupied resources(connections, channels, etc.) could be released.
-func Run(function func()) {
-	defer closeAll()
-	function()
-}
-
-func closeAll() {
-	log.Println("Closing...")
-	for _, dependency := range dependencies {
-		valueDepend := reflect.ValueOf(dependency)
-		closerType := reflect.TypeOf((*io.Closer)(nil)).Elem()
-		if valueDepend.Type().Implements(closerType) {
-			err := dependency.(io.Closer).Close()
-			if err != nil {
-				log.Println(err.Error())
-			}
-		}
-	}
 }
