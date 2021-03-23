@@ -9,8 +9,10 @@ import (
 	"unicode"
 )
 
-var dependencies map[string]interface{}
-var currentProfile = getProfile()
+var (
+	dependencies   map[string]interface{}
+	currentProfile = getProfile()
+)
 
 // Tag name
 const Tag = "autowire"
@@ -99,10 +101,9 @@ func Autowire(v interface{}) {
 		}
 	case reflect.Invalid:
 		log.Panicln("invalid reflection type")
-	default: // reflect.Array, reflect.Struct, reflect.Interface
-		log.Println(value.Type().String() + " value")
+	default: // reflect.Array, reflect.Struct, reflect.Interface, etc.
+		log.Panicln("unsupported: " + value.Type().String() + " value")
 	}
-	// log.Println(dependencies)
 }
 
 // Autowired function returns fully initialized with all dependencies instance, which is ready to be used.
@@ -131,9 +132,10 @@ func Autowired(v interface{}) interface{} {
 // Close function invoke Close method on each autowired struct
 // which implements io.Closer interface, so currently active
 // occupied resources (connections, channels, descriptor, etc.)
-// could be released.
-func Close() {
+// could be released. Returning slice of occurred errors.
+func Close() []error {
 	log.Println("Closing...")
+	var errors []error
 	for _, dependency := range dependencies {
 		valueDepend := reflect.ValueOf(dependency)
 		closerType := reflect.TypeOf((*io.Closer)(nil)).Elem()
@@ -141,9 +143,11 @@ func Close() {
 			err := dependency.(io.Closer).Close()
 			if err != nil {
 				log.Println(err.Error())
+				errors = append(errors, err)
 			}
 		}
 	}
+	return errors
 }
 
 func getStructPtrFullPath(value reflect.Value) string {
