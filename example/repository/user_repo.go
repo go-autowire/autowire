@@ -1,10 +1,10 @@
 // repository package
 package repository
 
-import "github.com/go-autowire/autowire"
+import . "github.com/go-autowire/autowire"
 
 func init() {
-	autowire.Autowire(&InMemoryUserRoleRepository{})
+	Autowire(&InMemoryUserRoleRepository{})
 }
 
 // UserRole type

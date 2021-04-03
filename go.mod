@@ -1,6 +1,6 @@
 module github.com/go-autowire/autowire
 
-go 1.15
+go 1.16
 
 require (
 	github.com/stretchr/objx v0.3.0 // indirect

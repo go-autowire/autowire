@@ -2,13 +2,18 @@ package autowire
 
 import (
 	"fmt"
+	"github.com/go-autowire/autowire/internal"
 	"github.com/go-autowire/autowire/internal/fake"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
 )
 
-const packageName = "github.com/go-autowire/autowire"
+const (
+	packageName     = "github.com/go-autowire/autowire"
+	myFooFieldName  = "myFoo"
+	passerFieldName = "passer"
+)
 
 func TestInitProd(t *testing.T) {
 	currentProfile = _Production
@@ -93,9 +98,9 @@ func Test_findDependency(t *testing.T) {
 func TestAutowireUnexportedStruct(t *testing.T) {
 	Autowire(&fake.Foo{})
 	tmpBar := &fake.Bar{}
-	assert.Nil(t, tmpBar.MyFoo())
+	assert.Nil(t, getFieldByName(tmpBar, myFooFieldName))
 	Autowire(tmpBar)
-	assert.NotNil(t, tmpBar.MyFoo())
+	assert.NotNil(t, getFieldByName(tmpBar, myFooFieldName))
 	dependencies = make(map[string]interface{})
 }
 
@@ -140,9 +145,9 @@ func TestAutowireStructNotImplementingInterface(t *testing.T) {
 func TestAutowireUnknownStructOnInterfacePlaceholder(t *testing.T) {
 	Autowire(&fake.Foo{})
 	tmpDep := &fake.NotFoundTagDependency{}
-	assert.Nil(t, tmpDep.Passer())
+	assert.Nil(t, getFieldByName(tmpDep, passerFieldName))
 	Autowire(tmpDep)
-	assert.Nil(t, tmpDep.Passer())
+	assert.Nil(t, getFieldByName(tmpDep, passerFieldName))
 	dependencies = make(map[string]interface{})
 }
 
@@ -171,9 +176,9 @@ func TestAutowireInvalid(t *testing.T) {
 func TestAutowired(t *testing.T) {
 	Autowire(&fake.Foo{})
 	tmpBar := &fake.Bar{}
-	assert.Nil(t, tmpBar.MyFoo())
+	assert.Nil(t, getFieldByName(tmpBar, myFooFieldName))
 	Autowire(tmpBar)
-	assert.NotNil(t, tmpBar.MyFoo())
+	assert.NotNil(t, getFieldByName(tmpBar, myFooFieldName))
 	resultStruct := Autowired(fake.Bar{}).(*fake.Bar)
 	assert.Equal(t, tmpBar, resultStruct)
 	resultPtrStruct := Autowired(&fake.Bar{}).(*fake.Bar)
@@ -192,4 +197,8 @@ func TestAutowiredInvalid(t *testing.T) {
 	}
 	assert.Panics(t, panicFunc)
 	dependencies = make(map[string]interface{})
+}
+
+func getFieldByName(v interface{}, fieldName string) interface{} {
+	return internal.GetUnexportedField(reflect.ValueOf(v).Elem().FieldByName(fieldName))
 }

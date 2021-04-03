@@ -8,3 +8,15 @@
 
 [report-card-img]: https://goreportcard.com/badge/github.com/go-autowire/autowire
 [report-card]: https://goreportcard.com/report/github.com/go-autowire/autowire
+
+Reflection based dependency injection toolkit for Golang.
+
+This README is in working in progress state.
+
+## Installation
+
+The whole project is based on go modules. 
+To get the latest version, use go1.16+ and fetch it using the go get command. For example:
+```bash
+go get github.com/go-autowire/autowire
+```

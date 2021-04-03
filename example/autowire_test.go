@@ -1,13 +1,12 @@
 package example
 
 import (
+	. "github.com/go-autowire/autowire"
+	"github.com/go-autowire/autowire/atesting"
+	"github.com/go-autowire/autowire/example/app"
 	"log"
 	"math/big"
 	"testing"
-
-	"github.com/go-autowire/autowire"
-	"github.com/go-autowire/autowire/atesting"
-	"github.com/go-autowire/autowire/example/app"
 )
 
 type TestPaymentServiceTest struct {
@@ -27,8 +26,8 @@ func (TestAuditClient) Send(_ string) {
 }
 
 func TestAutowire(t *testing.T) {
-	defer autowire.Close()
-	application := autowire.Autowired(app.Application{}).(*app.Application)
-	atesting.Spies(application, []interface{}{&TestPaymentServiceTest{}, &TestAuditClient{}})
+	defer Close()
+	application := Autowired(app.Application{}).(*app.Application)
+	atesting.Spy(application, &TestPaymentServiceTest{}, &TestAuditClient{})
 	application.Start()
 }

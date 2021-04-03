@@ -25,16 +25,6 @@ type Bar struct {
 	myFoo *Foo `autowire:""`
 }
 
-// SetMyFoo method is a simple Setter
-func (b *Bar) SetMyFoo(myFoo *Foo) {
-	b.myFoo = myFoo
-}
-
-// MyFoo method is a simple Getter
-func (b *Bar) MyFoo() *Foo {
-	return b.myFoo
-}
-
 // Bar represent named struct
 type Baz struct {
 	MyFoo *Foo `autowire:""`
@@ -50,11 +40,6 @@ type Qus struct {
 	passer Passer `autowire:"fake/Foo"`
 }
 
-// SetMyFoo method is a simple Setter
-func (q *Qus) SetPasser(passer Passer) {
-	q.passer = passer
-}
-
 // Passer method is a simple Getter
 func (q *Qus) Passer() Passer {
 	return q.passer
@@ -62,16 +47,6 @@ func (q *Qus) Passer() Passer {
 
 type NotFoundTagDependency struct {
 	passer Passer `autowire:"fake/FooBaz"`
-}
-
-// SetMyFoo method is a simple Setter
-func (n *NotFoundTagDependency) SetPasser(passer Passer) {
-	n.passer = passer
-}
-
-// Passer method is a simple Getter
-func (n *NotFoundTagDependency) Passer() Passer {
-	return n.passer
 }
 
 // InvalidInterface represents interface

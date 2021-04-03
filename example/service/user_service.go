@@ -15,7 +15,7 @@ type UserService struct {
 	userRoleRepository repository.UserRoleRepository `autowire:"repository/InMemoryUserRoleRepository"`
 }
 
-// Balance is function returning current balance of the user
+// Balance is a method returning current balance of the user.
 func (u UserService) Balance(userId string) (*big.Float, error) {
 	if u.validateUser(userId) {
 		u.auditClient.Send("Balance:check")
@@ -36,14 +36,4 @@ func (u UserService) validateUser(userId string) bool {
 		}
 	}
 	return false
-}
-
-// SetAuditClient is a Setter for auditClient field
-func (u *UserService) SetAuditClient(auditClient EventSender) {
-	u.auditClient = auditClient
-}
-
-// SetUserRoleRepository is a Setter for userRoleRepository field
-func (u *UserService) SetUserRoleRepository(userRoleRepository repository.UserRoleRepository) {
-	u.userRoleRepository = userRoleRepository
 }
