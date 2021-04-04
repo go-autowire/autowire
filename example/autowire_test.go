@@ -1,9 +1,9 @@
 package example
 
 import (
-	. "github.com/go-autowire/autowire"
-	"github.com/go-autowire/autowire/atesting"
 	"github.com/go-autowire/autowire/example/app"
+	"github.com/go-autowire/autowire/pkg"
+	"github.com/go-autowire/autowire/pkg/atesting"
 	"log"
 	"math/big"
 	"testing"
@@ -26,8 +26,8 @@ func (TestAuditClient) Send(_ string) {
 }
 
 func TestAutowire(t *testing.T) {
-	defer Close()
-	application := Autowired(app.Application{}).(*app.Application)
+	defer pkg.Close()
+	application := pkg.Autowired(app.Application{}).(*app.Application)
 	atesting.Spy(application, &TestPaymentServiceTest{}, &TestAuditClient{})
 	application.Start()
 }

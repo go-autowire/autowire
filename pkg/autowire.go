@@ -1,7 +1,7 @@
-package autowire
+package pkg
 
 import (
-	. "github.com/go-autowire/autowire/internal"
+	"github.com/go-autowire/autowire/pkg/internal"
 	"io"
 	"log"
 	"reflect"
@@ -11,7 +11,7 @@ import (
 
 var (
 	dependencies   map[string]interface{}
-	currentProfile = getProfile()
+	currentProfile = internal.GetProfile()
 )
 
 // Tag name
@@ -26,7 +26,7 @@ func init() {
 // InitProd executes function only in production so it is preventing execution in our go tests.
 // This flexibility could help if we want to skip autowiring struct in our tests.
 func InitProd(initFunc func()) {
-	if currentProfile == _Production {
+	if currentProfile == internal.Production {
 		initFunc()
 	}
 }
@@ -158,7 +158,7 @@ func autowireDependencies(value reflect.Value) {
 				currentDep := findDependency(tag)
 				if len(currentDep) == 0 {
 					msg := "Unknown dependency " + tag + " found none"
-					if currentProfile != _Testing {
+					if currentProfile != internal.Testing {
 						log.Panicln(msg)
 					} else {
 						log.Println(msg + ", ready for spy")
@@ -168,7 +168,7 @@ func autowireDependencies(value reflect.Value) {
 					if v.Type().Implements(field.Type) {
 						t = reflect.New(v.Type())
 						dependency := currentDep[0]
-						SetFieldValue(elem, i, dependency)
+						internal.SetFieldValue(elem, i, dependency)
 					} else {
 						log.Panicln(v.Type().String() + " doesnt Implements: " + field.Type.String())
 					}
@@ -177,7 +177,7 @@ func autowireDependencies(value reflect.Value) {
 				t = reflect.New(elem.Type().Field(i).Type.Elem())
 				dependency, found := dependencies[getStructPtrFullPath(t)]
 				if found {
-					SetFieldValue(elem, i, dependency)
+					internal.SetFieldValue(elem, i, dependency)
 				}
 			}
 		}

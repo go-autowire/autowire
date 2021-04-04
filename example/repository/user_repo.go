@@ -1,10 +1,12 @@
-// repository package
+// Package repository holds all repos
 package repository
 
-import . "github.com/go-autowire/autowire"
+import (
+	"github.com/go-autowire/autowire/pkg"
+)
 
 func init() {
-	Autowire(&InMemoryUserRoleRepository{})
+	pkg.Autowire(&InMemoryUserRoleRepository{})
 }
 
 // UserRole type

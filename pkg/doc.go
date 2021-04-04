@@ -1,4 +1,4 @@
-// Package autowire is a framework that makes easy using the dependency
+// Package pkg is a framework that makes easy using the dependency
 // injection in Golang.
 //
 // The main purpose of using Autowire as dependency injection framework is
@@ -15,4 +15,4 @@
 // To write unit or end-to-end tests of your application, you can use functions
 // provided by atesting package. For more information take a look at
 // https://godoc.org/github.com/go-autowire/autowire/atesting.
-package autowire
+package pkg

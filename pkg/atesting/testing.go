@@ -1,10 +1,10 @@
-// atesting package provides Spy function for easy way to mock dependencies
+// Package atesting provides Spy function for easy way to mock dependencies
 package atesting
 
 import (
 	"container/list"
-	. "github.com/go-autowire/autowire"
-	"github.com/go-autowire/autowire/internal"
+	"github.com/go-autowire/autowire/pkg"
+	"github.com/go-autowire/autowire/pkg/internal"
 	"log"
 	"reflect"
 )
@@ -37,7 +37,7 @@ func Spy(v interface{}, dependencies ...interface{}) {
 		}
 		for i := 0; i < elem.NumField(); i++ {
 			field := elem.Type().Field(i)
-			tag, ok := field.Tag.Lookup(Tag)
+			tag, ok := field.Tag.Lookup(pkg.Tag)
 			if ok {
 				if tag != "" {
 					for _, currentDependency := range dependencies {
@@ -45,13 +45,13 @@ func Spy(v interface{}, dependencies ...interface{}) {
 						if dependValue.Type().Implements(field.Type) {
 							t := reflect.New(dependValue.Type())
 							log.Println("Injecting Spy on currentDependency by tag " + tag + " will be used " + t.Type().String())
-							Autowire(currentDependency)
+							pkg.Autowire(currentDependency)
 							internal.SetFieldValue(elem, i, currentDependency)
 						}
 					}
 				} else {
 					for _, currentDependency := range dependencies {
-						log.Printf("Checking compatability between %s & %s", reflect.TypeOf(currentDependency), elem.Field(i).Type())
+						log.Printf("Checking compatibility between %s & %s", reflect.TypeOf(currentDependency), elem.Field(i).Type())
 						if reflect.TypeOf(currentDependency) == elem.Field(i).Type() {
 							internal.SetFieldValue(elem, i, currentDependency)
 						}
@@ -59,9 +59,9 @@ func Spy(v interface{}, dependencies ...interface{}) {
 				}
 				if !elem.Field(i).IsNil() {
 					if elem.Field(i).Elem().CanInterface() {
-						queue.PushBack(Autowired(elem.Field(i).Elem().Interface()))
+						queue.PushBack(pkg.Autowired(elem.Field(i).Elem().Interface()))
 					} else {
-						queue.PushBack(Autowired(internal.GetUnexportedField(elem.Field(i))))
+						queue.PushBack(pkg.Autowired(internal.GetUnexportedField(elem.Field(i))))
 					}
 				}
 			}

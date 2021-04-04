@@ -1,8 +1,8 @@
 package atesting_test
 
 import (
-	. "github.com/go-autowire/autowire"
-	. "github.com/go-autowire/autowire/atesting"
+	"github.com/go-autowire/autowire/pkg"
+	"github.com/go-autowire/autowire/pkg/atesting"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -55,51 +55,51 @@ type Baz struct {
 
 func TestSpyUnexportedStructPtr(t *testing.T) {
 	fooName := "foo"
-	Autowire(&Foo{Name: fooName})
+	pkg.Autowire(&Foo{Name: fooName})
 	barName := "bar"
-	Autowire(&Bar{Name: barName})
+	pkg.Autowire(&Bar{Name: barName})
 	tmpFooBar := &FooBarUnexported{}
-	Autowire(tmpFooBar)
+	pkg.Autowire(tmpFooBar)
 	assert.Equal(t, tmpFooBar.foo.Name, fooName)
 	assert.Equal(t, tmpFooBar.bar.Name, barName)
 	testFooName := "testFoo"
 	testBarName := "testBar"
-	Spy(tmpFooBar, &Foo{Name: testFooName}, &Bar{Name: testBarName})
+	atesting.Spy(tmpFooBar, &Foo{Name: testFooName}, &Bar{Name: testBarName})
 	assert.Equal(t, tmpFooBar.foo.Name, testFooName)
 	assert.Equal(t, tmpFooBar.bar.Name, testBarName)
-	assert.Equal(t, 0, len(Close()))
+	assert.Equal(t, 0, len(pkg.Close()))
 }
 
 func TestSpyExportedStructPtr(t *testing.T) {
 	fooName := "foo"
-	Autowire(&Foo{Name: fooName})
+	pkg.Autowire(&Foo{Name: fooName})
 	barName := "bar"
-	Autowire(&Bar{Name: barName})
+	pkg.Autowire(&Bar{Name: barName})
 	tmpFooBar := &FooBar{}
-	Autowire(tmpFooBar)
+	pkg.Autowire(tmpFooBar)
 	assert.Equal(t, tmpFooBar.Foo.Name, fooName)
 	assert.Equal(t, tmpFooBar.Bar.Name, barName)
 	testFooName := "testFoo"
 	testBarName := "testBar"
-	Spy(tmpFooBar, &Foo{Name: testFooName}, &Bar{Name: testBarName})
+	atesting.Spy(tmpFooBar, &Foo{Name: testFooName}, &Bar{Name: testBarName})
 	assert.Equal(t, tmpFooBar.Foo.Name, testFooName)
 	assert.Equal(t, tmpFooBar.Bar.Name, testBarName)
-	assert.Equal(t, 0, len(Close()))
+	assert.Equal(t, 0, len(pkg.Close()))
 }
 
 func TestSpyInterface(t *testing.T) {
 	fooName := "foo"
-	Autowire(&Foo{Name: fooName})
+	pkg.Autowire(&Foo{Name: fooName})
 	barName := "bar"
-	Autowire(&Bar{Name: barName})
+	pkg.Autowire(&Bar{Name: barName})
 	tmpBaz := &Baz{}
-	Autowire(tmpBaz)
+	pkg.Autowire(tmpBaz)
 	assert.Equal(t, tmpBaz.MyFoo.(*Foo).Name, fooName)
 	assert.Equal(t, tmpBaz.MyBaz.(*Bar).Name, barName)
 	testFooName := "testFoo"
 	testBarName := "testBar"
-	Spy(tmpBaz, &Foo{Name: testFooName}, &Bar{Name: testBarName})
+	atesting.Spy(tmpBaz, &Foo{Name: testFooName}, &Bar{Name: testBarName})
 	assert.Equal(t, tmpBaz.MyFoo.(*Foo).Name, testFooName)
 	assert.Equal(t, tmpBaz.MyBaz.(*Bar).Name, testBarName)
-	assert.Equal(t, 0, len(Close()))
+	assert.Equal(t, 0, len(pkg.Close()))
 }

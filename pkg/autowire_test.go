@@ -1,9 +1,9 @@
-package autowire
+package pkg
 
 import (
 	"fmt"
-	"github.com/go-autowire/autowire/internal"
-	"github.com/go-autowire/autowire/internal/fake"
+	"github.com/go-autowire/autowire/pkg/internal"
+	"github.com/go-autowire/autowire/pkg/internal/fake"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
@@ -16,14 +16,14 @@ const (
 )
 
 func TestInitProd(t *testing.T) {
-	currentProfile = _Production
+	currentProfile = internal.Production
 	callCount := 0
 	InitProd(func() {
 		callCount++
 	})
 	assert.Equal(t, callCount, 1)
 	// set it back to test mode
-	currentProfile = _Testing
+	currentProfile = internal.Testing
 }
 
 func TestInitProdSkippedInTests(t *testing.T) {

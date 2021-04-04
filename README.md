@@ -20,3 +20,7 @@ To get the latest version, use go1.16+ and fetch it using the go get command. Fo
 ```bash
 go get github.com/go-autowire/autowire
 ```
+To get the specific version, use go1.16+ and fetch it using the go get command. For example:
+```bash
+go get github.com/go-autowire/autowire@v1.0.4
+```

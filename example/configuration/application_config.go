@@ -1,12 +1,12 @@
-// configuration package
+// Package configuration holds application configs
 package configuration
 
 import (
-	. "github.com/go-autowire/autowire"
+	"github.com/go-autowire/autowire/pkg"
 )
 
 func init() {
-	Autowire(New("default"))
+	pkg.Autowire(New("default"))
 }
 
 // A ApplicationConfig represents name struct, which hold application configuration

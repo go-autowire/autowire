@@ -1,12 +1,12 @@
-package autowire
+package internal
 
 import (
 	"testing"
 )
 
 func Test_Profile(t *testing.T) {
-	profile := getProfile()
-	if profile != _Testing {
+	profile := GetProfile()
+	if profile != Testing {
 		t.Errorf("Expected profile testing found active")
 	}
 }

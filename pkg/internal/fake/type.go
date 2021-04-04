@@ -1,10 +1,11 @@
 package fake
 
+// Passer represents interface
 type Passer interface {
 	Pass()
 }
 
-// Foo represent named struct
+// Foo represents named struct
 type Foo struct {
 	Name       string
 	CloseCalls int
@@ -25,7 +26,7 @@ type Bar struct {
 	myFoo *Foo `autowire:""`
 }
 
-// Bar represent named struct
+// Baz represents named struct
 type Baz struct {
 	MyFoo *Foo `autowire:""`
 }
@@ -45,6 +46,7 @@ func (q *Qus) Passer() Passer {
 	return q.passer
 }
 
+// NotFoundTagDependency represents named struct
 type NotFoundTagDependency struct {
 	passer Passer `autowire:"fake/FooBaz"`
 }

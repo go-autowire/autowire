@@ -1,16 +1,16 @@
-// app package
+// Package app holds primary application code
 package app
 
 import (
+	"github.com/go-autowire/autowire/pkg"
 	"log"
 
-	. "github.com/go-autowire/autowire"
 	"github.com/go-autowire/autowire/example/configuration"
 	"github.com/go-autowire/autowire/example/service"
 )
 
 func init() {
-	Autowire(&Application{})
+	pkg.Autowire(&Application{})
 }
 
 // A Application represents named struct
