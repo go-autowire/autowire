@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	packageName     = "github.com/go-autowire/autowire"
+	packageName     = "github.com/go-autowire/autowire/pkg"
 	myFooFieldName  = "myFoo"
 	passerFieldName = "passer"
 )
