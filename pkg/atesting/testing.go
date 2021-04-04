@@ -32,8 +32,7 @@ func Spy(v interface{}, dependencies ...interface{}) {
 		value := reflect.ValueOf(elemQueue.Value)
 		queue.Remove(elemQueue)
 		var elem reflect.Value
-		switch value.Kind() {
-		case reflect.Ptr:
+		if value.Kind() == reflect.Ptr {
 			elem = value.Elem()
 		}
 		for i := 0; i < elem.NumField(); i++ {

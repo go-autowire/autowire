@@ -1,3 +1,4 @@
+// Package fake holds test structs
 package fake
 
 // Passer represents interface

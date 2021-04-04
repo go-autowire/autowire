@@ -8,6 +8,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const (
+	fooName     = "foo"
+	barName     = "bar"
+	testFooName = "testFoo"
+	testBarName = "testBar"
+)
+
 type FooEr interface {
 	Foo()
 }
@@ -55,16 +62,12 @@ type Baz struct {
 }
 
 func TestSpyUnexportedStructPtr(t *testing.T) {
-	fooName := "foo"
 	pkg.Autowire(&Foo{Name: fooName})
-	barName := "bar"
 	pkg.Autowire(&Bar{Name: barName})
 	tmpFooBar := &FooBarUnexported{}
 	pkg.Autowire(tmpFooBar)
 	assert.Equal(t, tmpFooBar.foo.Name, fooName)
 	assert.Equal(t, tmpFooBar.bar.Name, barName)
-	testFooName := "testFoo"
-	testBarName := "testBar"
 	atesting.Spy(tmpFooBar, &Foo{Name: testFooName}, &Bar{Name: testBarName})
 	assert.Equal(t, tmpFooBar.foo.Name, testFooName)
 	assert.Equal(t, tmpFooBar.bar.Name, testBarName)
@@ -72,16 +75,12 @@ func TestSpyUnexportedStructPtr(t *testing.T) {
 }
 
 func TestSpyExportedStructPtr(t *testing.T) {
-	fooName := "foo"
 	pkg.Autowire(&Foo{Name: fooName})
-	barName := "bar"
 	pkg.Autowire(&Bar{Name: barName})
 	tmpFooBar := &FooBar{}
 	pkg.Autowire(tmpFooBar)
 	assert.Equal(t, tmpFooBar.Foo.Name, fooName)
 	assert.Equal(t, tmpFooBar.Bar.Name, barName)
-	testFooName := "testFoo"
-	testBarName := "testBar"
 	atesting.Spy(tmpFooBar, &Foo{Name: testFooName}, &Bar{Name: testBarName})
 	assert.Equal(t, tmpFooBar.Foo.Name, testFooName)
 	assert.Equal(t, tmpFooBar.Bar.Name, testBarName)
@@ -89,16 +88,12 @@ func TestSpyExportedStructPtr(t *testing.T) {
 }
 
 func TestSpyInterface(t *testing.T) {
-	fooName := "foo"
 	pkg.Autowire(&Foo{Name: fooName})
-	barName := "bar"
 	pkg.Autowire(&Bar{Name: barName})
 	tmpBaz := &Baz{}
 	pkg.Autowire(tmpBaz)
 	assert.Equal(t, tmpBaz.MyFoo.(*Foo).Name, fooName)
 	assert.Equal(t, tmpBaz.MyBaz.(*Bar).Name, barName)
-	testFooName := "testFoo"
-	testBarName := "testBar"
 	atesting.Spy(tmpBaz, &Foo{Name: testFooName}, &Bar{Name: testBarName})
 	assert.Equal(t, tmpBaz.MyFoo.(*Foo).Name, testFooName)
 	assert.Equal(t, tmpBaz.MyBaz.(*Bar).Name, testBarName)
