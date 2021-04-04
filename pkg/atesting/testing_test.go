@@ -1,10 +1,11 @@
 package atesting_test
 
 import (
+	"testing"
+
 	"github.com/go-autowire/autowire/pkg"
 	"github.com/go-autowire/autowire/pkg/atesting"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 type FooEr interface {

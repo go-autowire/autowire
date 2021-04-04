@@ -3,10 +3,11 @@ package atesting
 
 import (
 	"container/list"
-	"github.com/go-autowire/autowire/pkg"
-	"github.com/go-autowire/autowire/pkg/internal"
 	"log"
 	"reflect"
+
+	"github.com/go-autowire/autowire/pkg"
+	"github.com/go-autowire/autowire/pkg/internal"
 )
 
 // Spy Function is replacing object field with the one provided in the function as a variadic arguments.

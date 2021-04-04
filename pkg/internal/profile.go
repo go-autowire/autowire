@@ -6,14 +6,18 @@ import (
 	"strings"
 )
 
-type profile uint64
+// Profile represents enum type
+type Profile uint64
 
 const (
-	Production profile = iota
+	// Production profile
+	Production Profile = iota
+	// Testing profile
 	Testing
 )
 
-func GetProfile() profile {
+// GetProfile function returns current profile
+func GetProfile() Profile {
 	args := os.Args
 	programName := args[0][strings.LastIndex(args[0], "/"):]
 	if result, _ := regexp.MatchString("/.*[Tt]est", programName); result {

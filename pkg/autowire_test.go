@@ -2,11 +2,12 @@ package pkg
 
 import (
 	"fmt"
+	"reflect"
+	"testing"
+
 	"github.com/go-autowire/autowire/pkg/internal"
 	"github.com/go-autowire/autowire/pkg/internal/fake"
 	"github.com/stretchr/testify/assert"
-	"reflect"
-	"testing"
 )
 
 const (

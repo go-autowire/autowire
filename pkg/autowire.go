@@ -1,12 +1,13 @@
 package pkg
 
 import (
-	"github.com/go-autowire/autowire/pkg/internal"
 	"io"
 	"log"
 	"reflect"
 	"regexp"
 	"strings"
+
+	"github.com/go-autowire/autowire/pkg/internal"
 )
 
 var (

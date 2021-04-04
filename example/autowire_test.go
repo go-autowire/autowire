@@ -1,12 +1,13 @@
 package example
 
 import (
-	"github.com/go-autowire/autowire/example/app"
-	"github.com/go-autowire/autowire/pkg"
-	"github.com/go-autowire/autowire/pkg/atesting"
 	"log"
 	"math/big"
 	"testing"
+
+	"github.com/go-autowire/autowire/example/app"
+	"github.com/go-autowire/autowire/pkg"
+	"github.com/go-autowire/autowire/pkg/atesting"
 )
 
 type TestPaymentServiceTest struct {

@@ -7,6 +7,6 @@ import (
 func Test_Profile(t *testing.T) {
 	profile := GetProfile()
 	if profile != Testing {
-		t.Errorf("Expected profile testing found active")
+		t.Errorf("Expected Profile testing found active")
 	}
 }

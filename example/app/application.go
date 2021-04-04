@@ -2,8 +2,9 @@
 package app
 
 import (
-	"github.com/go-autowire/autowire/pkg"
 	"log"
+
+	"github.com/go-autowire/autowire/pkg"
 
 	"github.com/go-autowire/autowire/example/configuration"
 	"github.com/go-autowire/autowire/example/service"
