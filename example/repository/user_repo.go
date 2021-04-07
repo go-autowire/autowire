@@ -5,6 +5,7 @@ import (
 	"github.com/go-autowire/autowire/pkg"
 )
 
+//nolint:gochecknoinits
 func init() {
 	pkg.Autowire(&InMemoryUserRoleRepository{})
 }
@@ -17,14 +18,14 @@ const (
 	OwnerRole UserRole = "owner"
 )
 
-// A String returns UserRole as a string
+// String returns UserRole as a string
 func (u UserRole) String() string {
 	return string(u)
 }
 
 // A UserRoleRepository represents interface containing roles related function: GetAllRoles
 type UserRoleRepository interface {
-	GetAllRoles(userId string) ([]UserRole, error)
+	GetAllRoles(userId string) ([]UserRole, error) //nolint:golint,stylecheck
 }
 
 // A InMemoryUserRoleRepository represents struct, which implements UserRoleRepository interface

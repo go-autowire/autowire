@@ -8,11 +8,13 @@ import (
 
 // GetUnexportedField functions returns value of the unexported field
 func GetUnexportedField(field reflect.Value) interface{} {
+	//nolint:gosec
 	return reflect.NewAt(field.Type(), unsafe.Pointer(field.UnsafeAddr())).Elem().Interface()
 }
 
 // SetUnexportedField functions sets value of the unexported field
 func SetUnexportedField(field reflect.Value, value interface{}) {
+	//nolint:gosec
 	reflect.NewAt(field.Type(), unsafe.Pointer(field.UnsafeAddr())).
 		Elem().
 		Set(reflect.ValueOf(value))

@@ -10,6 +10,7 @@ import (
 	"github.com/go-autowire/autowire/example/service"
 )
 
+//nolint:gochecknoinits
 func init() {
 	pkg.Autowire(&Application{})
 }
@@ -23,7 +24,7 @@ type Application struct {
 // Start method is starting application
 func (a Application) Start() {
 	log.Println("Config ApiKey : " + a.config.ApiKey()[:3] + "****")
-	userId := "serviceaccount@demo.com"
+	userId := "serviceaccount@demo.com" //nolint:golint,stylecheck
 	balance, err := a.userSvc.Balance(userId)
 	if err != nil {
 		log.Fatalln(err.Error())

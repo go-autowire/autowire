@@ -5,6 +5,7 @@ import (
 	"github.com/go-autowire/autowire/pkg"
 )
 
+//nolint:gochecknoinits
 func init() {
 	pkg.Autowire(New("default"))
 }
@@ -20,6 +21,6 @@ func New(apiKey string) *ApplicationConfig {
 }
 
 // ApiKey is a Getter, which returns apiKey value
-func (a ApplicationConfig) ApiKey() string {
+func (a ApplicationConfig) ApiKey() string { //nolint:golint,stylecheck
 	return a.apiKey
 }

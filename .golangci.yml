@@ -7,7 +7,9 @@ linters:
     - dogsled
     - dupl
     - errcheck
+    - exhaustive
     - funlen
+    - gochecknoinits
     - goconst
     - gocritic
     - gocyclo
@@ -37,6 +39,7 @@ linters:
     - unused
     - varcheck
     - whitespace
+    - gochecknoglobals
     - maligned
     - prealloc
 

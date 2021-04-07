@@ -11,13 +11,16 @@ import (
 )
 
 var (
-	dependencies   map[string]interface{}
+	//nolint:gochecknoglobals
+	dependencies map[string]interface{}
+	//nolint:gochecknoglobals
 	currentProfile = internal.GetProfile()
 )
 
 // Tag name
 const Tag = "autowire"
 
+//nolint:gochecknoinits
 func init() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	log.Println("Init Autowire Context")
@@ -75,7 +78,7 @@ func InitProd(initFunc func()) {
 // or separate files, which autowire all the structs.
 func Autowire(v interface{}) {
 	value := reflect.ValueOf(v)
-	switch value.Kind() {
+	switch value.Kind() { //nolint:exhaustive
 	case reflect.Ptr:
 		structType := getStructPtrFullPath(value)
 		_, ok := dependencies[structType]
@@ -101,7 +104,7 @@ func Autowire(v interface{}) {
 func Autowired(v interface{}) interface{} {
 	value := reflect.ValueOf(v)
 	var path string
-	switch value.Kind() {
+	switch value.Kind() { //nolint:exhaustive
 	case reflect.Struct:
 		path = getFullPath(value.Type().PkgPath(), value.Type().String())
 	case reflect.Ptr:

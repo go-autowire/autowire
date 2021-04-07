@@ -9,7 +9,7 @@ build:
 
 .PHONY: lint
 lint: $(GOLINT)
-	golangci-lint run --fix --fast ${FileDir} -e "(\\w|\\s|\`)+\\w+(\`)? should be(\\w|\\s|\`)+" --skip-dirs=fake
+	golangci-lint run --fix --fast ${FileDir}
 
 .PHONY: test
 test:

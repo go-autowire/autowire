@@ -24,7 +24,7 @@ func (f *Foo) Close() error {
 
 // Bar represent named struct
 type Bar struct {
-	myFoo *Foo `autowire:""`
+	myFoo *Foo `autowire:""` //nolint:structcheck,unused
 }
 
 // Baz represents named struct
@@ -49,7 +49,7 @@ func (q *Qus) Passer() Passer {
 
 // NotFoundTagDependency represents named struct
 type NotFoundTagDependency struct {
-	passer Passer `autowire:"fake/FooBaz"`
+	passer Passer `autowire:"fake/FooBaz"` //nolint:structcheck,unused
 }
 
 // InvalidInterface represents interface
