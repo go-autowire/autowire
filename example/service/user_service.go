@@ -16,7 +16,7 @@ type UserService struct {
 }
 
 // Balance is a method returning current balance of the user.
-func (u UserService) Balance(userId string) (*big.Float, error) { //nolint:golint,stylecheck
+func (u UserService) Balance(userId string) (*big.Float, error) { //nolint:revive,stylecheck
 	if u.validateUser(userId) {
 		u.auditClient.Send("Balance:check")
 		return u.PaymentSvc.Balance(), nil
@@ -24,7 +24,7 @@ func (u UserService) Balance(userId string) (*big.Float, error) { //nolint:golin
 	return nil, fmt.Errorf("invalid user with id %s", userId)
 }
 
-//nolint:golint,stylecheck
+//nolint:revive,stylecheck
 func (u UserService) validateUser(userId string) bool {
 	roles, err := u.userRoleRepository.GetAllRoles(userId)
 	if err != nil {

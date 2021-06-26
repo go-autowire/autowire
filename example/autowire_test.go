@@ -32,3 +32,21 @@ func TestAutowire(t *testing.T) {
 	atesting.Spy(application, &TestPaymentServiceTest{}, &TestAuditClient{})
 	application.Start()
 }
+
+type Bar struct {
+	name string
+}
+
+type Baz struct {
+	bar *Bar `autowire:""`
+}
+
+func TestAutowire2(t *testing.T) {
+	pkg.Close()
+	pkg.Autowire(&Bar{name: "org"})
+	pkg.Autowire(Baz{})
+	baz := pkg.Autowired(Baz{}).(*Baz)
+	log.Println(baz.bar.name)
+	atesting.Spy(baz, &Bar{name: "new"})
+	log.Println(baz.bar.name)
+}

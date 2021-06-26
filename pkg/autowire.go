@@ -27,7 +27,7 @@ func init() {
 	dependencies = make(map[string]interface{})
 }
 
-// InitProd executes function in case enviroment is production only, this way 
+// InitProd executes function in case environment is production only, this way
 // it is preventing execution of it inside go tests.
 // This flexibility could help if you want to skip autowiring struct in our tests.
 func InitProd(initFunc func()) {
@@ -93,7 +93,8 @@ func Autowire(v interface{}) {
 	case reflect.Invalid:
 		log.Panicln("invalid reflection type")
 	default: // reflect.Array, reflect.Struct, reflect.Interface, etc.
-		log.Panicln("unsupported: " + value.Type().String() + " value")
+		log.Panicf("autowiring structs is unsupported, expected to receive struct pointer(*%s)",
+			value.Type().String())
 	}
 }
 

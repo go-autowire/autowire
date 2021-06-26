@@ -21,6 +21,6 @@ func New(apiKey string) *ApplicationConfig {
 }
 
 // ApiKey is a Getter, which returns apiKey value
-func (a ApplicationConfig) ApiKey() string { //nolint:golint,stylecheck
+func (a ApplicationConfig) ApiKey() string { //nolint:revive,stylecheck
 	return a.apiKey
 }

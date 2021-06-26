@@ -25,7 +25,7 @@ func (u UserRole) String() string {
 
 // A UserRoleRepository represents interface containing roles related function: GetAllRoles
 type UserRoleRepository interface {
-	GetAllRoles(userId string) ([]UserRole, error) //nolint:golint,stylecheck
+	GetAllRoles(userId string) ([]UserRole, error) //nolint:revive,stylecheck
 }
 
 // A InMemoryUserRoleRepository represents struct, which implements UserRoleRepository interface
