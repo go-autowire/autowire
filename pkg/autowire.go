@@ -17,7 +17,7 @@ var (
 	currentProfile = internal.GetProfile()
 )
 
-// Tag name
+// Tag respresents autowire go tag.
 const Tag = "autowire"
 
 //nolint:gochecknoinits
@@ -27,8 +27,9 @@ func init() {
 	dependencies = make(map[string]interface{})
 }
 
-// InitProd executes function only in production so it is preventing execution in our go tests.
-// This flexibility could help if we want to skip autowiring struct in our tests.
+// InitProd executes function in case enviroment is production only, this way 
+// it is preventing execution of it inside go tests.
+// This flexibility could help if you want to skip autowiring struct in our tests.
 func InitProd(initFunc func()) {
 	if currentProfile == internal.Production {
 		initFunc()
@@ -67,15 +68,15 @@ func InitProd(initFunc func()) {
 //  }
 // UserRoleRepository is simply an interface and InMemoryUserRoleRepository is a
 // struct, which implements that interface. For more information take a look at
-// example https://github.com/go-autowire/autowire/tree/main/example package.
+// example package: https://github.com/go-autowire/autowire/tree/main/example.
 // Very Simplified Example:
 //		type App struct {}
 //		func init()  {
 //			Autowire(&App{})
 //		}
-// As mentioned above Autowire function should be invoked in the package init function,
+// As mentioned above Autowire function cloud be invoked in the package init function,
 // but also it is possible to do it in the main function of the application,
-// or separate files, which autowire all the structs.
+// or separate files, which will be responsible for autowiring all the structs.
 func Autowire(v interface{}) {
 	value := reflect.ValueOf(v)
 	switch value.Kind() { //nolint:exhaustive
@@ -96,10 +97,10 @@ func Autowire(v interface{}) {
 	}
 }
 
-// Autowired function returns fully initialized with all dependencies instance, which is ready to be used.
+// Autowired function returns fully initialized instance with all dependencies, which is ready to be used.
 // As the result is empty interface, type assertions is required before using the instance.
 // Take a look at https://golang.org/ref/spec#Type_assertions for more information.
-// The following snippet demonstrate how could be done :
+// The following snippet demonstrate simple usage of it :
 // 	 app := Autowired(app.Application{}).(*app.Application)
 func Autowired(v interface{}) interface{} {
 	value := reflect.ValueOf(v)
