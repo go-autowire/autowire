@@ -16,10 +16,10 @@ const (
 	passerFieldName = "passer"
 )
 
-func TestInitProd(t *testing.T) {
+func TestRunProd(t *testing.T) {
 	currentProfile = internal.Production
 	callCount := 0
-	InitProd(func() {
+	RunProd(func() {
 		callCount++
 	})
 	assert.Equal(t, callCount, 1)
@@ -27,9 +27,9 @@ func TestInitProd(t *testing.T) {
 	currentProfile = internal.Testing
 }
 
-func TestInitProdSkippedInTests(t *testing.T) {
+func TestRunProdSkippedInTests(t *testing.T) {
 	callCount := 0
-	InitProd(func() {
+	RunProd(func() {
 		callCount++
 	})
 	assert.Equal(t, callCount, 0)
@@ -150,6 +150,7 @@ func TestAutowireUnknownStructOnInterfacePlaceholder(t *testing.T) {
 	Autowire(tmpDep)
 	assert.Nil(t, getFieldByName(tmpDep, passerFieldName))
 	dependencies = make(map[string]interface{})
+	requiredDependencies = make(map[string]map[string]interface{})
 }
 
 func TestAutowireDependencyAlreadyAutowired(t *testing.T) {
@@ -159,6 +160,41 @@ func TestAutowireDependencyAlreadyAutowired(t *testing.T) {
 	Autowire(secondFoo)
 	structType := getStructPtrFullPath(reflect.ValueOf(secondFoo))
 	assert.Equal(t, dependencies[structType], fistFoo)
+	dependencies = make(map[string]interface{})
+}
+
+func TestAutowireUnorderedUnexportedStructDependencies(t *testing.T) {
+	tmpBar := &fake.Bar{}
+	assert.Nil(t, getFieldByName(tmpBar, myFooFieldName))
+	Autowire(tmpBar, &fake.Foo{})
+	assert.NotNil(t, getFieldByName(tmpBar, myFooFieldName))
+	dependencies = make(map[string]interface{})
+	requiredDependencies = make(map[string]map[string]interface{})
+}
+
+func TestAutowireUnorderedExportedStructDependencies(t *testing.T) {
+	tmpBaz := &fake.Baz{}
+	assert.Nil(t, tmpBaz.MyFoo)
+	Autowire(tmpBaz, &fake.Foo{})
+	assert.NotNil(t, tmpBaz.MyFoo)
+	dependencies = make(map[string]interface{})
+	requiredDependencies = make(map[string]map[string]interface{})
+}
+
+func TestAutowireUnorderedUnexportedInterfaceDependencies(t *testing.T) {
+	tmpBaz := &fake.Qus{}
+	assert.Nil(t, tmpBaz.Passer())
+	Autowire(tmpBaz, &fake.Foo{})
+	assert.NotNil(t, tmpBaz.Passer)
+	dependencies = make(map[string]interface{})
+}
+
+func TestAutowireUnorderedExportedInterfaceDependencies(t *testing.T) {
+	Autowire(&fake.Foo{})
+	tmpBaz := &fake.Qux{}
+	assert.Nil(t, tmpBaz.Passer)
+	Autowire(tmpBaz)
+	assert.NotNil(t, tmpBaz.Passer)
 	dependencies = make(map[string]interface{})
 }
 

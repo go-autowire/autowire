@@ -15,7 +15,7 @@ func init() {
 	pkg.Autowire(&Application{})
 }
 
-// A Application represents named struct
+// Application represents named struct
 type Application struct {
 	config  *configuration.ApplicationConfig `autowire:""`
 	userSvc *service.UserService             `autowire:""`

@@ -14,6 +14,8 @@ var (
 	//nolint:gochecknoglobals
 	dependencies map[string]interface{}
 	//nolint:gochecknoglobals
+	requiredDependencies map[string]map[string]interface{}
+	//nolint:gochecknoglobals
 	currentProfile = internal.GetProfile()
 )
 
@@ -25,14 +27,15 @@ func init() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	log.Println("Init Autowire Context")
 	dependencies = make(map[string]interface{})
+	requiredDependencies = make(map[string]map[string]interface{})
 }
 
-// InitProd executes function in case environment is production only, this way
+// RunProd executes function in case environment is production only, this way
 // it is preventing execution of it inside go tests.
 // This flexibility could help if you want to skip autowiring struct in our tests.
-func InitProd(initFunc func()) {
+func RunProd(runFunc func()) {
 	if currentProfile == internal.Production {
-		initFunc()
+		runFunc()
 	}
 }
 
@@ -77,7 +80,22 @@ func InitProd(initFunc func()) {
 // As mentioned above Autowire function cloud be invoked in the package init function,
 // but also it is possible to do it in the main function of the application,
 // or separate files, which will be responsible for autowiring all the structs.
-func Autowire(v interface{}) {
+func Autowire(values ...interface{}) {
+	for _, v := range values {
+		autowire(v)
+		depPath := getStructPtrFullPath(reflect.ValueOf(v))
+		if uncompletedDepMap, found := requiredDependencies[depPath]; found {
+			for uncompleted := range uncompletedDepMap {
+				if dep, ok := dependencies[uncompleted]; ok { // check for tags
+					delete(uncompletedDepMap, uncompleted)
+					autowireDependencies(reflect.ValueOf(dep))
+				}
+			}
+		}
+	}
+}
+
+func autowire(v interface{}) {
 	value := reflect.ValueOf(v)
 	switch value.Kind() { //nolint:exhaustive
 	case reflect.Ptr:
@@ -141,6 +159,7 @@ func Close() []error {
 		}
 		delete(dependencies, key)
 	}
+	requiredDependencies = make(map[string]map[string]interface{})
 	return errors
 }
 
@@ -154,6 +173,7 @@ func getFullPath(pkgPath string, typePath string) string {
 }
 
 func autowireDependencies(value reflect.Value) {
+	structType := getStructPtrFullPath(value)
 	elem := value.Elem()
 	for i := 0; i < elem.NumField(); i++ {
 		field := elem.Type().Field(i)
@@ -165,10 +185,11 @@ func autowireDependencies(value reflect.Value) {
 				if len(currentDep) == 0 {
 					msg := "Unknown dependency " + tag + " found none"
 					if currentProfile != internal.Testing {
-						log.Panicln(msg)
+						log.Println(msg)
 					} else {
 						log.Println(msg + ", ready for spy")
 					}
+					markStructUninitialized(structType, tag)
 				} else {
 					v := reflect.ValueOf(currentDep[0])
 					if v.Type().Implements(field.Type) {
@@ -184,9 +205,21 @@ func autowireDependencies(value reflect.Value) {
 				dependency, found := dependencies[getStructPtrFullPath(t)]
 				if found {
 					internal.SetFieldValue(elem, i, dependency)
+				} else {
+					markStructUninitialized(structType, getStructPtrFullPath(t))
 				}
 			}
 		}
+	}
+}
+
+func markStructUninitialized(structType string, depName string) {
+	if depMap, ok := requiredDependencies[depName]; ok {
+		depMap[structType] = true
+	} else {
+		requiredDependencies[depName] = map[string]interface{}{}
+		depMap = requiredDependencies[depName]
+		depMap[structType] = true
 	}
 }
 
